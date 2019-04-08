@@ -1,13 +1,13 @@
-import sys
+import time
 import socket
 import threading
 
 class Scanner(threading.Thread):
 
-    def __init__(self, address, port):
+    def __init__(self, address, ports):
         threading.Thread.__init__(self)
         self.address = address
-        self.port = port
+        self.ports = ports
 
     def __checksum(self, message):
         if (type(message).__name__ != 'str'):
@@ -17,7 +17,7 @@ class Scanner(threading.Thread):
 
     def __receive(self, sock):
         data = None
-        sock.settimeout(0.5)
+        sock.settimeout(1)
         try:
             data = sock.recv(4096)
         except socket.timeout:
@@ -41,32 +41,26 @@ class Scanner(threading.Thread):
         ]
         for command in commands:
             data = self.__send(sock, command)
+            time.sleep(0.2)
 
         sock.close()
-        if data is None:
-            return False
         if data is None or 'PacketSize' not in data.decode('ascii'):
             return False
         return True
 
-    def __connect(self):
+    def __connect(self, port):
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.settimeout(0.5)
+        s.settimeout(1)
         try:
-            s.connect((self.address, self.port))
-        except socket.timeout:
-            return None
-        except Exception as ex:
+            s.connect((self.address, port))
+        except Exception:
             return None
         s.settimeout(None)
         return s
 
     def run(self):
-        sys.stdout.write("Scanning %s:%d ...\r" % (self.address, self.port))
-        sys.stdout.flush()
-        sock = self.__connect()
-        if sock is None:
-            return
-        if self.__probe(sock) is False:
-            return
-        print("\nFound gdbserver on address %s:%d" % (self.address, self.port))
+        for port in self.ports:
+            sock = self.__connect(port)
+            if sock is None or self.__probe(sock) is False:
+                continue
+            print("\nFound gdbserver on address %s:%d" % (self.address, port))

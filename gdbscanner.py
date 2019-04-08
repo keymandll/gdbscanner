@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import sys
 import time
 import ipaddress
 import argparse
@@ -30,13 +31,14 @@ def process_threads():
         time.sleep(0.1)
 
 for address in ipaddress.ip_network(args.get('network')).hosts():
-    for port in PORTS:
-        if (len(threads) >= thread_count):
-            process_threads()
-        try:
-            scanner = Scanner(str(address), port)
-            scanner.start()
-            threads.append(scanner)
-        except Exception as ex:
-            print(str(ex))
+    sys.stdout.write("Scanning %s ...\r" % (address))
+    sys.stdout.flush()
+    if (len(threads) >= thread_count):
+        process_threads()
+    try:
+        scanner = Scanner(str(address), PORTS)
+        scanner.start()
+        threads.append(scanner)
+    except Exception as ex:
+        print(str(ex))
 
