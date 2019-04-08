@@ -9,16 +9,10 @@ class Scanner(threading.Thread):
         self.ports = ports
 
     def __checksum(self, message):
-        if (type(message).__name__ != 'str'):
-            message = message.decode('ascii')
-            print(message)
         lbytes = list(map(ord, message))
         return hex(sum(lbytes) % 256)[2:].encode('ascii')
 
     def __read_response(self, sock):
-        """
-        Socket-level read of remote stub response.
-        """
         d = b''
         while True:
             r_byte = sock.recv(1)
@@ -31,11 +25,6 @@ class Scanner(threading.Thread):
         return None
 
     def __receive(self, sock, timeout=False):
-        """
-        Receive data from remote stub.
-
-            :returns Response: Data received
-        """
         try:
             if timeout is True:
                 sock.settimeout(2)
