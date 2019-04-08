@@ -1,3 +1,4 @@
+
 # GDB Scanner
 
 GDB Scanner is a small script to scan for GDB servers on a network.
@@ -17,13 +18,12 @@ Good that you asked. Imagine you are working as a penetration tester / red team 
 # How?
 
 What this script does:
-
- 1. It looks for ports most commonly used by GDB server. GDB server does not have a default port so the port list used is based on the most popular GDB server ports found by searching on Google.
- 2. If an open port is found, it sends 3 commands to probe for the presence of a GDB server. These are:
- 2.1. QStartNoAckMode - This is so that we do not have to deal with acknowledgement packets (+)
- 2.2. ! - Switch to extended mode. As much as I wanted to have a scanner that does not change the state of the GDB server, without this, once disconnected the GDB server would terminate. 
- 2.3. qSupported - To fetch a list of features supported by the GDB server. This step is not really necessary but it's a very convincing way to prove it's 100% that we found a GDB server.
- 3. If the service on the port being probed responds to the previous commands as expected, the script will print the address and port the GDB server was found on.
+1. It looks for ports most commonly used by GDB server. GDB server does not have a default port so the port list used is based on the most popular GDB server ports found by searching on Google.
+2. If an open port is found, it sends 3 commands to probe for the presence of a GDB server. These are:
+    1. `QStartNoAckMode` - This is so that we do not have to deal with acknowledgement packets (+)
+    2. `!` - Switch to extended mode. As much as I wanted to have a scanner that does not change the state of the GDB server, without this, once disconnected the GDB server would terminate.
+    3. `qSupported` - To fetch a list of features supported by the GDB server. This step is not really necessary but it's a very convincing way to prove it's 100% that we found a GDB server.
+3. If the service on the port being probed responds to the previous commands as expected, the script will print the address and port the GDB server was found on.
 
 # How to use?
 
