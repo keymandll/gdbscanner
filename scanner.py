@@ -41,10 +41,13 @@ class Scanner(threading.Thread):
         ]
         for command in commands:
             data = self.__send(sock, command)
-            time.sleep(0.2)
+            time.sleep(1)
 
         sock.close()
-        if data is None or 'PacketSize' not in data.decode('ascii'):
+        if data is None:
+            return False
+        print(data)
+        if 'PacketSize' not in data.decode('ascii'):
             return False
         return True
 
