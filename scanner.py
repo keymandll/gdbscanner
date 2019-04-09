@@ -32,13 +32,17 @@ class Scanner(threading.Thread):
             if timeout is True:
                 sock.settimeout(None)
             return rdata
-        except socket.timeout:
+        except Exception:
             return None
 
     def __send(self, sock, command):
         chk = self.__checksum(command)
         to_send = b'$' + bytes(command, 'ascii') + b'#' + chk
-        sock.send(to_send)
+        try:
+            sock.send(to_send)
+        except Exception:
+            return False
+        return True
 
     def __connect(self, port):
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -63,7 +67,9 @@ class Scanner(threading.Thread):
         ]
 
         for command in commands:
-            self.__send(sock, command)
+            if self.__send(sock, command) is False:
+                sock.close()
+                return
             data = self.__receive(sock, timeout=True)
 
         if data is None:
